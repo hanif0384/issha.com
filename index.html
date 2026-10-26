@@ -29,7 +29,6 @@
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .toast-notification { transition: opacity 0.3s ease; opacity: 0; pointer-events: none; z-index: 9999; }
         .toast-notification.show { opacity: 1; }
-        /* Hide scrollbar for category list */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -55,13 +54,11 @@
     <header class="bg-white sticky top-0 z-50 shadow-sm py-4">
         <div class="container mx-auto px-4 flex flex-wrap items-center justify-between gap-4">
             
-            <!-- Logo -->
             <a href="index.html" class="flex-shrink-0 flex items-center">
                 <span class="text-3xl font-black text-issha-red tracking-tight">issha</span>
                 <span class="text-3xl font-black text-gray-800 tracking-tight">.com</span>
             </a>
 
-            <!-- Search Bar -->
             <div class="flex-1 max-w-2xl hidden md:flex border-2 border-issha-red rounded overflow-hidden">
                 <select class="bg-gray-100 text-gray-700 px-3 py-2 border-r border-gray-200 outline-none text-sm cursor-pointer">
                     <option>All Categories</option>
@@ -73,7 +70,6 @@
                 <button class="bg-issha-red hover:bg-issha-darkred text-white px-8 font-medium transition">Search</button>
             </div>
 
-            <!-- Icons -->
             <div class="flex items-center space-x-6 text-sm">
                 <a href="#" class="flex flex-col items-center text-gray-600 hover:text-issha-red transition">
                     <i class="far fa-user text-xl mb-1"></i>
@@ -93,27 +89,42 @@
         </div>
     </header>
 
-    <!-- Mobile Search (Visible only on small screens) -->
     <div class="p-3 bg-white border-b border-gray-200 md:hidden flex">
         <input type="text" placeholder="Search products..." class="flex-1 px-4 py-2 border border-issha-red rounded-l outline-none text-sm">
         <button class="bg-issha-red text-white px-4 rounded-r"><i class="fas fa-search"></i></button>
     </div>
 
-    <!-- Navigation Menu -->
-    <nav class="bg-white border-b border-gray-200 hidden lg:block shadow-sm">
+    <!-- Navigation Menu with Dropdown -->
+    <nav class="bg-white border-b border-gray-200 hidden lg:block shadow-sm relative z-40">
         <div class="container mx-auto px-4 flex">
-            <div class="bg-issha-red text-white flex items-center px-6 py-3 cursor-pointer w-64 hover:bg-issha-darkred transition">
-                <i class="fas fa-bars mr-3"></i>
-                <span class="font-bold">All Categories</span>
-                <i class="fas fa-chevron-down ml-auto text-xs"></i>
+            <!-- Dropdown Section -->
+            <div class="relative">
+                <div id="allCatBtn" class="bg-issha-red text-white flex items-center px-6 py-3 cursor-pointer w-64 hover:bg-issha-darkred transition">
+                    <i class="fas fa-bars mr-3"></i>
+                    <span class="font-bold">All Categories</span>
+                    <i class="fas fa-chevron-down ml-auto text-xs"></i>
+                </div>
+                <!-- Dropdown List -->
+                <ul id="catDropdown" class="absolute left-0 top-full w-full bg-white shadow-lg border-x border-b border-gray-200 hidden">
+                    <li class="border-b border-gray-100 hover:bg-gray-50"><a href="javascript:void(0)" onclick="filterCategory('All')" class="block px-6 py-3 text-issha-red font-bold">All Products</a></li>
+                    <li class="border-b border-gray-100 hover:bg-gray-50"><a href="javascript:void(0)" onclick="filterCategory('Mobile')" class="block px-6 py-3 text-gray-700 hover:text-issha-red">Mobile</a></li>
+                    <li class="border-b border-gray-100 hover:bg-gray-50"><a href="javascript:void(0)" onclick="filterCategory('Laptop')" class="block px-6 py-3 text-gray-700 hover:text-issha-red">Laptop</a></li>
+                    <li class="border-b border-gray-100 hover:bg-gray-50"><a href="javascript:void(0)" onclick="filterCategory('Fashion')" class="block px-6 py-3 text-gray-700 hover:text-issha-red">Fashion</a></li>
+                    <li class="border-b border-gray-100 hover:bg-gray-50"><a href="javascript:void(0)" onclick="filterCategory('Electronics')" class="block px-6 py-3 text-gray-700 hover:text-issha-red">Electronics</a></li>
+                    <li class="border-b border-gray-100 hover:bg-gray-50"><a href="javascript:void(0)" onclick="filterCategory('Men\'s Fashion')" class="block px-6 py-3 text-gray-700 hover:text-issha-red">Men's Fashion</a></li>
+                    <li class="border-b border-gray-100 hover:bg-gray-50"><a href="javascript:void(0)" onclick="filterCategory('Women\'s Fashion')" class="block px-6 py-3 text-gray-700 hover:text-issha-red">Women's Fashion</a></li>
+                    <li class="border-b border-gray-100 hover:bg-gray-50"><a href="javascript:void(0)" onclick="filterCategory('Home & Kitchen')" class="block px-6 py-3 text-gray-700 hover:text-issha-red">Home & Kitchen</a></li>
+                    <li class="hover:bg-gray-50"><a href="javascript:void(0)" onclick="filterCategory('Groceries')" class="block px-6 py-3 text-gray-700 hover:text-issha-red">Groceries</a></li>
+                </ul>
             </div>
+            
             <ul class="flex items-center space-x-8 ml-8 text-sm font-medium text-gray-700">
-                <li><a href="#" class="hover:text-issha-red transition">Electronics</a></li>
-                <li><a href="#" class="hover:text-issha-red transition">Men's Fashion</a></li>
-                <li><a href="#" class="hover:text-issha-red transition">Women's Fashion</a></li>
-                <li><a href="#" class="hover:text-issha-red transition">Home & Kitchen</a></li>
-                <li><a href="#" class="hover:text-issha-red transition">Groceries</a></li>
-                <li><a href="#" class="text-issha-red font-bold"><i class="fas fa-tag mr-1"></i> Special Offers</a></li>
+                <li><a href="javascript:void(0)" onclick="filterCategory('Mobile')" class="hover:text-issha-red transition">Mobile</a></li>
+                <li><a href="javascript:void(0)" onclick="filterCategory('Laptop')" class="hover:text-issha-red transition">Laptop</a></li>
+                <li><a href="javascript:void(0)" onclick="filterCategory('Fashion')" class="hover:text-issha-red transition">Fashion</a></li>
+                <li><a href="javascript:void(0)" onclick="filterCategory('Home & Kitchen')" class="hover:text-issha-red transition">Home & Kitchen</a></li>
+                <li><a href="javascript:void(0)" onclick="filterCategory('Groceries')" class="hover:text-issha-red transition">Groceries</a></li>
+                <li><a href="javascript:void(0)" onclick="filterCategory('All')" class="text-issha-red font-bold"><i class="fas fa-tag mr-1"></i> Special Offers</a></li>
             </ul>
         </div>
     </nav>
@@ -121,7 +132,6 @@
     <!-- Main Content -->
     <main class="flex-grow container mx-auto px-4 py-6">
         
-        <!-- Banners Section -->
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
             <div class="lg:col-span-2 bg-gradient-to-r from-red-500 to-rose-400 rounded-lg p-8 md:p-12 text-white flex flex-col justify-center min-h-[300px] relative overflow-hidden shadow-sm">
                 <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 20px 20px;"></div>
@@ -133,51 +143,49 @@
                 </div>
             </div>
             <div class="flex flex-col gap-4">
-                <div class="bg-blue-500 rounded-lg p-6 text-white flex flex-col justify-center flex-1 shadow-sm relative overflow-hidden">
+                <div class="bg-blue-500 rounded-lg p-6 text-white flex flex-col justify-center flex-1 shadow-sm relative overflow-hidden cursor-pointer" onclick="filterCategory('Mobile')">
                     <h3 class="text-xl font-bold mb-2 z-10">New Arrivals</h3>
                     <p class="text-sm opacity-90 mb-4 z-10">Latest Smartphones</p>
-                    <a href="#" class="text-sm font-bold flex items-center z-10 hover:underline">EXPLORE <i class="fas fa-arrow-right ml-1"></i></a>
+                    <a href="javascript:void(0)" class="text-sm font-bold flex items-center z-10 hover:underline">EXPLORE <i class="fas fa-arrow-right ml-1"></i></a>
                     <i class="fas fa-mobile-alt absolute -bottom-4 -right-2 text-8xl opacity-20"></i>
                 </div>
-                <div class="bg-purple-500 rounded-lg p-6 text-white flex flex-col justify-center flex-1 shadow-sm relative overflow-hidden">
+                <div class="bg-purple-500 rounded-lg p-6 text-white flex flex-col justify-center flex-1 shadow-sm relative overflow-hidden cursor-pointer" onclick="filterCategory('Fashion')">
                     <h3 class="text-xl font-bold mb-2 z-10">Summer Fashion</h3>
                     <p class="text-sm opacity-90 mb-4 z-10">Starting at ৳499</p>
-                    <a href="#" class="text-sm font-bold flex items-center z-10 hover:underline">EXPLORE <i class="fas fa-arrow-right ml-1"></i></a>
+                    <a href="javascript:void(0)" class="text-sm font-bold flex items-center z-10 hover:underline">EXPLORE <i class="fas fa-arrow-right ml-1"></i></a>
                     <i class="fas fa-tshirt absolute -bottom-4 -right-2 text-8xl opacity-20"></i>
                 </div>
             </div>
         </section>
 
-        <!-- Categories Icons -->
         <section class="bg-white rounded-lg shadow-sm p-6 mb-8 border border-gray-100">
             <h3 class="text-lg font-bold text-gray-800 mb-6">Shop by Categories</h3>
             <div class="flex overflow-x-auto hide-scrollbar gap-6 pb-4">
-                <!-- Generated categories -->
-                <div class="flex flex-col items-center min-w-[80px] cursor-pointer group">
+                <div class="flex flex-col items-center min-w-[80px] cursor-pointer group" onclick="filterCategory('Mobile')">
                     <div class="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 group-hover:bg-red-50 group-hover:text-issha-red transition mb-3 border border-gray-100 shadow-sm">
                         <i class="fas fa-mobile-alt text-2xl"></i>
                     </div>
                     <span class="text-xs text-center font-medium text-gray-600 group-hover:text-issha-red">Mobiles</span>
                 </div>
-                <div class="flex flex-col items-center min-w-[80px] cursor-pointer group">
+                <div class="flex flex-col items-center min-w-[80px] cursor-pointer group" onclick="filterCategory('Laptop')">
                     <div class="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 group-hover:bg-red-50 group-hover:text-issha-red transition mb-3 border border-gray-100 shadow-sm">
                         <i class="fas fa-laptop text-2xl"></i>
                     </div>
                     <span class="text-xs text-center font-medium text-gray-600 group-hover:text-issha-red">Laptops</span>
                 </div>
-                <div class="flex flex-col items-center min-w-[80px] cursor-pointer group">
+                <div class="flex flex-col items-center min-w-[80px] cursor-pointer group" onclick="filterCategory('Fashion')">
                     <div class="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 group-hover:bg-red-50 group-hover:text-issha-red transition mb-3 border border-gray-100 shadow-sm">
                         <i class="fas fa-tshirt text-2xl"></i>
                     </div>
                     <span class="text-xs text-center font-medium text-gray-600 group-hover:text-issha-red">Fashion</span>
                 </div>
-                <div class="flex flex-col items-center min-w-[80px] cursor-pointer group">
+                <div class="flex flex-col items-center min-w-[80px] cursor-pointer group" onclick="filterCategory('Home & Kitchen')">
                     <div class="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 group-hover:bg-red-50 group-hover:text-issha-red transition mb-3 border border-gray-100 shadow-sm">
                         <i class="fas fa-blender text-2xl"></i>
                     </div>
                     <span class="text-xs text-center font-medium text-gray-600 group-hover:text-issha-red">Appliances</span>
                 </div>
-                <div class="flex flex-col items-center min-w-[80px] cursor-pointer group">
+                <div class="flex flex-col items-center min-w-[80px] cursor-pointer group" onclick="filterCategory('Groceries')">
                     <div class="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 group-hover:bg-red-50 group-hover:text-issha-red transition mb-3 border border-gray-100 shadow-sm">
                         <i class="fas fa-carrot text-2xl"></i>
                     </div>
@@ -187,30 +195,24 @@
         </section>
 
         <!-- Live Firebase Data Section -->
-        <section class="mb-10">
+        <section class="mb-10" id="products-section">
             <div class="flex items-center justify-between mb-6 border-b border-gray-200 pb-3">
-                <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                <h2 id="section-title-text" class="text-2xl font-bold text-gray-800 flex items-center">
                     <i class="fas fa-bolt text-issha-red mr-2"></i> Trending Products
                 </h2>
-                <a href="#" class="text-sm font-medium text-issha-red hover:underline hidden sm:block">View All</a>
+                <a href="javascript:void(0)" onclick="filterCategory('All')" class="text-sm font-medium text-issha-red hover:underline hidden sm:block">View All</a>
             </div>
             
-            <!-- Dynamic Container for Database Items -->
             <div id="dynamic-products-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                
-                <!-- Loading State -->
                 <div id="loading-indicator" class="col-span-full py-16 flex flex-col items-center justify-center text-gray-500 bg-white rounded-lg border border-gray-100 shadow-sm">
                     <i class="fas fa-spinner fa-spin text-4xl text-issha-red mb-4"></i>
                     <p class="font-medium text-lg">Loading latest products...</p>
                     <p class="text-sm text-gray-400 mt-2">Connecting to Issha Realtime Database</p>
                 </div>
-
             </div>
         </section>
-
     </main>
 
-    <!-- Footer -->
     <footer class="bg-white border-t border-gray-200 mt-auto pt-10 pb-6">
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
@@ -258,12 +260,28 @@
         </div>
     </footer>
 
-    <!-- Toast Notification -->
     <div id="toast" class="toast-notification fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded shadow-xl flex items-center z-50">
         <i class="fas fa-check-circle text-green-400 mr-2 text-lg"></i> <span class="font-medium text-sm">Added to cart!</span>
     </div>
 
-    <!-- Firebase Realtime Database Integration -->
+    <!-- Dropdown Script -->
+    <script>
+        const catBtn = document.getElementById('allCatBtn');
+        const catDropdown = document.getElementById('catDropdown');
+        
+        catBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            catDropdown.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!catBtn.contains(e.target) && !catDropdown.contains(e.target)) {
+                catDropdown.classList.add('hidden');
+            }
+        });
+    </script>
+
+    <!-- Firebase System -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
@@ -286,118 +304,135 @@
         const cartElement = document.getElementById('cart-count');
         const container = document.getElementById('dynamic-products-container');
         const loading = document.getElementById('loading-indicator');
+        let allProductsData = []; 
 
-        // Reference to the 'products' node in Realtime DB
         const productsRef = ref(db, 'products');
         
-        try {
-            // Listen for data in real-time
-            onValue(productsRef, (snapshot) => {
-                loading.style.display = 'none';
-                container.innerHTML = ''; 
-                
-                if (!snapshot.exists()) {
-                    container.innerHTML = `
-                        <div class="col-span-full py-16 flex flex-col items-center text-gray-500 bg-white rounded-lg shadow-sm border border-gray-100">
-                            <i class="fas fa-box-open text-5xl text-gray-300 mb-4"></i>
-                            <h3 class="text-xl font-bold text-gray-700">No products available yet.</h3>
-                            <p class="mt-2 text-sm">Visit the <a href="admin.html" class="text-issha-red font-bold underline">Admin Panel</a> to add your first product!</p>
-                        </div>`;
-                    return;
-                }
+        onValue(productsRef, (snapshot) => {
+            loading.style.display = 'none';
+            allProductsData = []; 
+            
+            if (!snapshot.exists()) {
+                container.innerHTML = `
+                    <div class="col-span-full py-16 flex flex-col items-center text-gray-500 bg-white rounded-lg shadow-sm border border-gray-100">
+                        <i class="fas fa-box-open text-5xl text-gray-300 mb-4"></i>
+                        <h3 class="text-xl font-bold text-gray-700">No products available yet.</h3>
+                        <p class="mt-2 text-sm">Visit the <a href="admin.html" class="text-issha-red font-bold underline">Admin Panel</a> to add your first product!</p>
+                    </div>`;
+                return;
+            }
 
-                snapshot.forEach(childSnapshot => {
-                    const id = childSnapshot.key;
-                    const data = childSnapshot.val();
-                    
-                    const productImg = (data.images && data.images.length > 0) ? data.images[0] : (data.image || data.imageUrl);
-                    const discountHtml = data.discount > 0 ? `<span class="absolute top-2 left-2 bg-issha-red text-white text-[11px] font-bold px-2 py-1 rounded shadow-sm z-10">-${data.discount}%</span>` : '';
-                    
-                    // Calculate old price based on discount
-                    let oldPriceHtml = '';
-                    if (data.discount > 0) {
-                        const originalPrice = data.price / (1 - (data.discount / 100));
-                        oldPriceHtml = `<span class="text-xs text-gray-400 line-through ml-2">৳${originalPrice.toFixed(0)}</span>`;
-                    }
-                    
-                    const card = document.createElement('div');
-                    card.className = "bg-white rounded border border-gray-100 p-3 hover:shadow-xl transition duration-300 flex flex-col group relative";
-                    
-                    card.innerHTML = `
-                        ${discountHtml}
-                        <a href="product.html?id=${id}" class="flex-grow flex flex-col cursor-pointer">
-                            <div class="aspect-square mb-3 relative overflow-hidden bg-gray-50 flex justify-center items-center rounded-sm">
-                                <img src="${productImg}" alt="${data.name}" class="object-cover w-full h-full group-hover:scale-110 transition duration-500" onerror="this.src='https://placehold.co/300x300/f8fafc/94a3b8?text=Image+Not+Found'">
-                                
-                                <!-- Quick view overlay -->
-                                <div class="absolute inset-0 bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                    <div class="bg-white text-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-issha-red hover:text-white transition shadow-lg transform translate-y-4 group-hover:translate-y-0 duration-300">
-                                        <i class="far fa-eye"></i>
-                                    </div>
+            snapshot.forEach(childSnapshot => {
+                allProductsData.push({ id: childSnapshot.key, ...childSnapshot.val() });
+            });
+
+            renderProducts(allProductsData);
+        }, (error) => {
+            loading.innerHTML = `
+                <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
+                <p class="text-red-600 font-medium">Database connection error.</p>
+            `;
+        });
+
+        // Function to render products based on data array
+        function renderProducts(productsList) {
+            container.innerHTML = '';
+            
+            if (productsList.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-16 flex flex-col items-center text-gray-500 bg-white rounded-lg shadow-sm border border-gray-100">
+                        <i class="fas fa-search text-5xl text-gray-300 mb-4"></i>
+                        <h3 class="text-xl font-bold text-gray-700">No products found in this category.</h3>
+                    </div>`;
+                return;
+            }
+
+            productsList.forEach(data => {
+                const productImg = (data.images && data.images.length > 0) ? data.images[0] : (data.image || data.imageUrl);
+                const discountHtml = data.discount > 0 ? `<span class="absolute top-2 left-2 bg-issha-red text-white text-[11px] font-bold px-2 py-1 rounded shadow-sm z-10">-${data.discount}%</span>` : '';
+                
+                let oldPriceHtml = '';
+                if (data.discount > 0) {
+                    const originalPrice = data.price / (1 - (data.discount / 100));
+                    oldPriceHtml = `<span class="text-xs text-gray-400 line-through ml-2">৳${originalPrice.toFixed(0)}</span>`;
+                }
+                
+                const card = document.createElement('div');
+                card.className = "bg-white rounded border border-gray-100 p-3 hover:shadow-xl transition duration-300 flex flex-col group relative";
+                
+                card.innerHTML = `
+                    ${discountHtml}
+                    <a href="product.html?id=${data.id}" class="flex-grow flex flex-col cursor-pointer">
+                        <div class="aspect-square mb-3 relative overflow-hidden bg-gray-50 flex justify-center items-center rounded-sm">
+                            <img src="${productImg}" alt="${data.name}" class="object-cover w-full h-full group-hover:scale-110 transition duration-500" onerror="this.src='https://placehold.co/300x300/f8fafc/94a3b8?text=Image+Not+Found'">
+                            <div class="absolute inset-0 bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <div class="bg-white text-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-issha-red hover:text-white transition shadow-lg transform translate-y-4 group-hover:translate-y-0 duration-300">
+                                    <i class="far fa-eye"></i>
                                 </div>
                             </div>
-                            
-                            <div class="text-[10px] text-gray-400 uppercase tracking-wider mb-1 font-bold">${data.category}</div>
-                            
-                            <h3 class="text-sm font-medium text-gray-800 line-clamp-2 hover:text-issha-red mb-1 cursor-pointer transition h-10" title="${data.name}">${data.name}</h3>
-                            
-                            <!-- Star Ratings Mock -->
-                            <div class="flex text-yellow-400 text-[10px] mb-2">
-                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
-                                <span class="text-gray-400 ml-1">(4.5)</span>
-                            </div>
-                        </a>
-                        
-                        <div class="mt-auto pt-2">
-                            <div class="flex items-center mb-3">
-                                <span class="font-black text-issha-red text-lg">৳${data.price}</span>
-                                ${oldPriceHtml}
-                            </div>
-                            <button class="add-to-cart w-full bg-white border border-issha-red text-issha-red hover:bg-issha-red hover:text-white transition py-2 rounded text-sm font-bold flex justify-center items-center gap-2">
-                                <i class="fas fa-shopping-cart"></i> Add to Cart
-                            </button>
                         </div>
-                    `;
-                    container.appendChild(card);
-                });
-
-                // Attach Add to Cart event listeners
-                document.querySelectorAll('.add-to-cart').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        cartTotal++;
-                        cartElement.textContent = cartTotal;
-                        
-                        // Show Toast
-                        const toast = document.getElementById('toast');
-                        toast.classList.add('show');
-                        setTimeout(() => toast.classList.remove('show'), 2500);
-                        
-                        // Button Visual Feedback
-                        const originalHtml = e.currentTarget.innerHTML;
-                        const btnEl = e.currentTarget;
-                        btnEl.innerHTML = "<i class='fas fa-check'></i> Added";
-                        btnEl.classList.add('bg-green-500', 'text-white', 'border-green-500');
-                        btnEl.classList.remove('bg-white', 'text-issha-red', 'border-issha-red', 'hover:bg-issha-red');
-                        
-                        setTimeout(() => {
-                            btnEl.innerHTML = originalHtml;
-                            btnEl.classList.remove('bg-green-500', 'text-white', 'border-green-500');
-                            btnEl.classList.add('bg-white', 'text-issha-red', 'border-issha-red', 'hover:bg-issha-red');
-                        }, 2000);
-                    });
-                });
-            }, (error) => {
-                console.error("Firebase Read Error:", error);
-                loading.innerHTML = `
-                    <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
-                    <p class="text-red-600 font-medium">Database connection error.</p>
-                    <p class="text-sm text-gray-500 mt-1">Please ensure your Database Rules are set correctly.</p>
+                        <div class="text-[10px] text-gray-400 uppercase tracking-wider mb-1 font-bold">${data.category}</div>
+                        <h3 class="text-sm font-medium text-gray-800 line-clamp-2 hover:text-issha-red mb-1 cursor-pointer transition h-10" title="${data.name}">${data.name}</h3>
+                        <div class="flex text-yellow-400 text-[10px] mb-2">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                            <span class="text-gray-400 ml-1">(4.5)</span>
+                        </div>
+                    </a>
+                    
+                    <div class="mt-auto pt-2">
+                        <div class="flex items-center mb-3">
+                            <span class="font-black text-issha-red text-lg">৳${data.price}</span>
+                            ${oldPriceHtml}
+                        </div>
+                        <button class="add-to-cart w-full bg-white border border-issha-red text-issha-red hover:bg-issha-red hover:text-white transition py-2 rounded text-sm font-bold flex justify-center items-center gap-2">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+                    </div>
                 `;
+                container.appendChild(card);
             });
-        } catch (err) {
-            console.error("Setup error:", err);
-            loading.innerHTML = `<p class="text-red-500">A setup error occurred.</p>`;
+
+            // Add to cart click event
+            document.querySelectorAll('.add-to-cart').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    cartTotal++;
+                    cartElement.textContent = cartTotal;
+                    
+                    const toast = document.getElementById('toast');
+                    toast.classList.add('show');
+                    setTimeout(() => toast.classList.remove('show'), 2500);
+                    
+                    const originalHtml = e.currentTarget.innerHTML;
+                    const btnEl = e.currentTarget;
+                    btnEl.innerHTML = "<i class='fas fa-check'></i> Added";
+                    btnEl.classList.add('bg-green-500', 'text-white', 'border-green-500');
+                    btnEl.classList.remove('bg-white', 'text-issha-red', 'border-issha-red', 'hover:bg-issha-red');
+                    
+                    setTimeout(() => {
+                        btnEl.innerHTML = originalHtml;
+                        btnEl.classList.remove('bg-green-500', 'text-white', 'border-green-500');
+                        btnEl.classList.add('bg-white', 'text-issha-red', 'border-issha-red', 'hover:bg-issha-red');
+                    }, 2000);
+                });
+            });
         }
+
+        // Global filter function
+        window.filterCategory = (categoryName) => {
+            const titleEl = document.getElementById('section-title-text');
+            if (categoryName === 'All') {
+                titleEl.innerHTML = `<i class="fas fa-bolt text-issha-red mr-2"></i> All Products`;
+                renderProducts(allProductsData);
+            } else {
+                titleEl.innerHTML = `<i class="fas fa-list text-issha-red mr-2"></i> ${categoryName} Products`;
+                const filtered = allProductsData.filter(p => p.category === categoryName);
+                renderProducts(filtered);
+            }
+            
+            // Hide dropdown and scroll down
+            document.getElementById('catDropdown').classList.add('hidden');
+            document.getElementById('products-section').scrollIntoView({ behavior: 'smooth' });
+        };
     </script>
 </body>
 </html>
