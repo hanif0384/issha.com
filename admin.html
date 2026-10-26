@@ -115,4 +115,172 @@
         </div>
 
         <div class="card">
-            <div
+            <div class="card-title">Added Products</div>
+            <table>
+                <thead>
+                    <tr><th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>Actions</th></tr>
+                </thead>
+                <tbody id="productList">
+                    <tr><td colspan="5" style="text-align:center; color:#888;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getDatabase, ref, push, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        // Full Firebase Config 
+        const firebaseConfig = {
+            apiKey: "AIzaSyD7C3P4V9CIy2U65GjUz16fBe7zv4SsMh0",
+            authDomain: "issha-com.firebaseapp.com",
+            databaseURL: "https://issha-com-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "issha-com",
+            storageBucket: "issha-com.firebasestorage.app",
+            messagingSenderId: "310408793063",
+            appId: "1:310408793063:web:3aee032ee2d451a46d0b42",
+            measurementId: "G-6T2G9KWWWK"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let editingProductId = null; 
+        let loadedProducts = {}; 
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) { document.getElementById('loginOverlay').style.display = 'none'; loadProducts(); } 
+            else { document.getElementById('loginOverlay').style.display = 'flex'; }
+        });
+        
+        document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('loginBtn');
+            btn.innerText = "Checking...";
+            signInWithEmailAndPassword(auth, document.getElementById('adminEmail').value, document.getElementById('adminPassword').value)
+                .then(() => { btn.innerText = "Login"; })
+                .catch(err => { 
+                    btn.innerText = "Login";
+                    document.getElementById('loginError').style.display = 'block'; 
+                    document.getElementById('loginError').innerText = err.message; 
+                });
+        });
+        
+        document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
+
+        document.getElementById('addImgBtn').addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'url';
+            input.className = 'form-control productImageInput';
+            input.placeholder = 'Extra Image URL';
+            document.getElementById('imageInputContainer').insertBefore(input, document.getElementById('addImgBtn'));
+        });
+
+        document.getElementById('addProductForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('saveBtn');
+            btn.innerText = "Saving...";
+            
+            let imagesArray = [];
+            document.querySelectorAll('.productImageInput').forEach(input => {
+                if(input.value.trim() !== '') imagesArray.push(input.value.trim());
+            });
+
+            const productData = {
+                name: document.getElementById('productName').value,
+                description: document.getElementById('productDesc').value,
+                category: document.getElementById('productCategory').value,
+                images: imagesArray,
+                image: imagesArray[0], 
+                price: Number(document.getElementById('productPrice').value),
+                discount: Number(document.getElementById('productDiscount').value || 0),
+                updatedAt: Date.now()
+            };
+
+            if (editingProductId) {
+                await update(ref(db, 'products/' + editingProductId), productData);
+                alert("Product updated!");
+            } else {
+                productData.createdAt = Date.now();
+                await set(push(ref(db, 'products')), productData);
+                alert("Product added!");
+            }
+            window.resetFormState();
+        });
+
+        window.resetFormState = () => {
+            document.getElementById('addProductForm').reset();
+            editingProductId = null;
+            document.getElementById('formTitle').innerText = "Add New Product";
+            document.getElementById('saveBtn').innerText = "Save Product";
+            document.getElementById('cancelBtn').style.display = "none";
+            document.querySelectorAll('.productImageInput').forEach((el, index) => { if(index > 0) el.remove(); });
+        };
+
+        function loadProducts() {
+            onValue(ref(db, 'products'), (snapshot) => {
+                const list = document.getElementById('productList');
+                list.innerHTML = '';
+                loadedProducts = {}; 
+                if (snapshot.exists()) {
+                    snapshot.forEach((childSnapshot) => {
+                        const id = childSnapshot.key;
+                        const p = childSnapshot.val();
+                        loadedProducts[id] = p; 
+                        const firstImage = (p.images && p.images.length > 0) ? p.images[0] : p.image;
+                        list.innerHTML += `
+                            <tr>
+                                <td><img src="${firstImage}" class="product-img-td"></td>
+                                <td><strong>${p.name}</strong></td>
+                                <td>${p.category}</td>
+                                <td>৳${p.price}</td>
+                                <td>
+                                    <button class="btn-edit" onclick="editProduct('${id}')">Edit</button>
+                                    <button class="btn-delete" onclick="deleteProduct('${id}')">Del</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                } else { list.innerHTML = '<tr><td colspan="5" align="center">No products found.</td></tr>'; }
+            });
+        }
+
+        window.editProduct = (id) => {
+            const p = loadedProducts[id];
+            editingProductId = id;
+            document.getElementById('productName').value = p.name;
+            document.getElementById('productDesc').value = p.description || '';
+            document.getElementById('productCategory').value = p.category;
+            document.getElementById('productPrice').value = p.price;
+            document.getElementById('productDiscount').value = p.discount || 0;
+            
+            const imagesToLoad = (p.images && p.images.length > 0) ? p.images : [p.image];
+            document.querySelectorAll('.productImageInput').forEach((el, index) => { if(index > 0) el.remove(); });
+            document.querySelector('.productImageInput').value = imagesToLoad[0];
+            
+            for(let i = 1; i < imagesToLoad.length; i++) {
+                const input = document.createElement('input');
+                input.type = 'url';
+                input.className = 'form-control productImageInput';
+                input.value = imagesToLoad[i];
+                document.getElementById('imageInputContainer').insertBefore(input, document.getElementById('addImgBtn'));
+            }
+
+            document.getElementById('formTitle').innerText = "Edit Product";
+            document.getElementById('saveBtn').innerText = "Update";
+            document.getElementById('cancelBtn').style.display = "inline-block";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.deleteProduct = async (id) => {
+            if(confirm("Are you sure you want to delete this?")) {
+                await remove(ref(db, 'products/' + id));
+                if(editingProductId === id) window.resetFormState(); 
+            }
+        };
+    </script>
+</body>
+</html>
