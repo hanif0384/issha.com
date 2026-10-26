@@ -99,6 +99,17 @@
                         <button type="button" id="addImgBtn" class="btn-add-img">+ Add More Images</button>
                     </div>
                 </div>
+                <!-- Brand and Color Row -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Brand (Optional)</label>
+                        <input type="text" id="productBrand" class="form-control" placeholder="e.g. Samsung, Sony">
+                    </div>
+                    <div class="form-group">
+                        <label>Colors (Optional - Koma diye likhun)</label>
+                        <input type="text" id="productColors" class="form-control" placeholder="e.g. Black, Red, Blue">
+                    </div>
+                </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label>Regular Price (৳) *</label>
@@ -188,11 +199,17 @@
             document.querySelectorAll('.productImageInput').forEach(input => {
                 if(input.value.trim() !== '') imagesArray.push(input.value.trim());
             });
+            
+            // Process Colors (comma separated)
+            const colorsStr = document.getElementById('productColors').value;
+            const colorsArray = colorsStr ? colorsStr.split(',').map(c => c.trim()).filter(c => c !== '') : [];
 
             const productData = {
                 name: document.getElementById('productName').value,
                 description: document.getElementById('productDesc').value,
                 category: document.getElementById('productCategory').value,
+                brand: document.getElementById('productBrand').value.trim(),
+                colors: colorsArray,
                 images: imagesArray,
                 image: imagesArray[0], 
                 price: Number(document.getElementById('productPrice').value),
@@ -254,6 +271,8 @@
             document.getElementById('productName').value = p.name;
             document.getElementById('productDesc').value = p.description || '';
             document.getElementById('productCategory').value = p.category;
+            document.getElementById('productBrand').value = p.brand || '';
+            document.getElementById('productColors').value = (p.colors && p.colors.length > 0) ? p.colors.join(', ') : '';
             document.getElementById('productPrice').value = p.price;
             document.getElementById('productDiscount').value = p.discount || 0;
             
