@@ -17,11 +17,21 @@
         .thumbnail-gallery img { width: 60px; height: 60px; object-fit: contain; border: 1px solid #ddd; cursor: pointer; border-radius: 4px; transition: 0.2s; }
         .thumbnail-gallery img:hover { border-color: #e31e24; }
         .product-info { flex: 1.2; padding-left: 10px; }
-        .p-title { font-size: 26px; color: #333; margin-bottom: 10px; }
+        
+        .p-title { font-size: 26px; color: #333; margin-bottom: 5px; }
+        .p-brand { font-size: 14px; color: #888; margin-bottom: 10px; font-weight: bold; }
         .p-category { color: #888; font-size: 14px; margin-bottom: 20px; display: inline-block; background: #f4f6f8; padding: 5px 10px; border-radius: 4px; }
         .p-price { font-size: 32px; color: #e31e24; font-weight: bold; margin-bottom: 25px; }
-        .p-desc-title { font-size: 16px; font-weight: bold; color: #333; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        
+        .p-section-title { font-size: 16px; font-weight: bold; color: #333; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
         .p-desc { color: #555; line-height: 1.6; font-size: 15px; margin-bottom: 30px; white-space: pre-wrap; }
+        
+        /* Color Options Styles */
+        .color-options { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 25px; }
+        .color-btn { border: 1px solid #ddd; padding: 8px 15px; border-radius: 4px; background: #fff; cursor: pointer; transition: 0.3s; font-size: 14px; color: #555; }
+        .color-btn:hover { border-color: #e31e24; color: #e31e24; }
+        .color-btn.active { background: #fce8e8; border-color: #e31e24; color: #e31e24; font-weight: bold; }
+        
         .btn-cart { background: #e31e24; color: white; border: none; padding: 15px 30px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; width: 100%; transition: 0.3s; }
         .btn-cart:hover { background: #c81a20; }
         #loading { text-align: center; padding: 50px; font-size: 18px; color: #666; }
@@ -38,32 +48,43 @@
         </div>
         <div class="product-info">
             <h1 id="detailName" class="p-title"></h1>
+            <div id="detailBrand" class="p-brand"></div>
             <div id="detailCategory" class="p-category"></div>
             <div id="detailPrice" class="p-price"></div>
-            <div class="p-desc-title">Product Description</div>
+            
+            <!-- Color Selection Area -->
+            <div id="colorContainer" style="display: none;">
+                <div class="p-section-title">Select Color</div>
+                <div id="colorOptions" class="color-options"></div>
+            </div>
+
+            <div class="p-section-title">Product Description</div>
             <div id="detailDesc" class="p-desc"></div>
-            <button class="btn-cart" onclick="alert('Added to cart successfully!')">Add to Cart</button>
+            
+            <button class="btn-cart" id="addToCartBtn">Add to Cart</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+        
         const db = getDatabase(initializeApp({
             apiKey: "AIzaSyD7C3P4V9CIy2U65GjUz16fBe7zv4SsMh0",
             databaseURL: "https://issha-com-default-rtdb.asia-southeast1.firebasedatabase.app"
         }));
 
         const productId = new URLSearchParams(window.location.search).get('id');
+        let selectedColor = "";
+
         if (productId) {
             get(ref(db, 'products/' + productId)).then((snapshot) => {
                 if (snapshot.exists()) {
                     const p = snapshot.val();
                     
-                    // Main chobi ebong gallery set kora
+                    // Setup Images
                     const images = (p.images && p.images.length > 0) ? p.images : [p.image];
                     document.getElementById('detailImg').src = images[0];
-                    
                     const gallery = document.getElementById('thumbGallery');
                     images.forEach(imgUrl => {
                         const imgEl = document.createElement('img');
@@ -72,11 +93,55 @@
                         gallery.appendChild(imgEl);
                     });
 
+                    // Setup Info
                     document.getElementById('detailName').innerText = p.name;
                     document.getElementById('detailCategory').innerText = p.category;
                     document.getElementById('detailPrice').innerText = '৳ ' + p.price;
                     document.getElementById('detailDesc').innerText = p.description || "";
                     
+                    // Setup Brand
+                    if (p.brand && p.brand.trim() !== '') {
+                        document.getElementById('detailBrand').innerText = 'Brand: ' + p.brand;
+                    }
+
+                    // Setup Colors
+                    if (p.colors && p.colors.length > 0) {
+                        document.getElementById('colorContainer').style.display = 'block';
+                        const colorOptions = document.getElementById('colorOptions');
+                        
+                        p.colors.forEach((color, index) => {
+                            const btn = document.createElement('button');
+                            btn.className = 'color-btn';
+                            btn.innerText = color;
+                            
+                            // Prothom color ti by default select kore rakha
+                            if (index === 0) {
+                                btn.classList.add('active');
+                                selectedColor = color;
+                            }
+
+                            btn.onclick = () => {
+                                // Shob button theke active class remove kora
+                                document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+                                // Click kora button e active class add kora
+                                btn.classList.add('active');
+                                selectedColor = color;
+                            };
+                            colorOptions.appendChild(btn);
+                        });
+                    }
+
+                    // Add to cart click logic
+                    document.getElementById('addToCartBtn').onclick = () => {
+                        if (p.colors && p.colors.length > 0 && !selectedColor) {
+                            alert("Please select a color first!");
+                        } else {
+                            let msg = "Added to cart successfully!";
+                            if (selectedColor) msg += " (Color: " + selectedColor + ")";
+                            alert(msg);
+                        }
+                    };
+
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('productContainer').style.display = 'flex';
                 }
