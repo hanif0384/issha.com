@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Issha.com - Admin Panel</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f6f8; display: flex; height: 100vh; overflow: hidden; }
+        .sidebar { width: 250px; background-color: #fff; border-right: 1px solid #ddd; padding: 20px 0; height: 100vh; flex-shrink: 0; }
+        .logo { font-size: 24px; font-weight: bold; color: #e31e24; text-align: center; margin-bottom: 30px; }
+        .logo span { color: #333; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+        .menu-item { padding: 15px 20px; color: #555; cursor: pointer; border-left: 4px solid transparent; transition: 0.3s; }
+        .menu-item:hover, .menu-item.active { background-color: #fce8e8; color: #e31e24; border-left: 4px solid #e31e24; }
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; height: 100vh; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid #ddd; }
+        .header h1 { font-size: 20px; color: #333; }
+        .btn-live { background-color: white; color: #e31e24; border: 1px solid #e31e24; padding: 8px 15px; border-radius: 4px; text-decoration: none; font-size: 14px; }
+        .btn-live:hover { background-color: #fce8e8; }
+        .card { background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .card-title { font-size: 16px; font-weight: bold; margin-bottom: 20px; color: #333; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; color: #555; margin-bottom: 5px; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; margin-bottom: 5px; }
+        .form-control:focus { outline: none; border-color: #e31e24; }
+        textarea.form-control { resize: vertical; min-height: 80px; }
+        .form-row { display: flex; gap: 20px; }
+        .form-row .form-group { flex: 1; }
+        .btn-submit { background-color: #e31e24; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 14px; float: right; font-weight: bold; }
+        .btn-submit:hover { background-color: #c81a20; }
+        .btn-cancel { background-color: #888; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 14px; float: right; font-weight: bold; margin-right: 10px; display: none; }
+        .btn-cancel:hover { background-color: #666; }
+        .btn-add-img { background-color: #eee; color: #333; border: 1px solid #ccc; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-top: 5px; }
+        .btn-add-img:hover { background-color: #ddd; }
+        .clearfix::after { content: ""; clear: both; display: table; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
+        th { font-size: 12px; color: #888; text-transform: uppercase; background-color: #fcfcfc; }
+        .product-img-td { width: 50px; height: 50px; object-fit: contain; border-radius: 4px; border: 1px solid #eee; }
+        .btn-edit { background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; margin-right: 5px; }
+        .btn-edit:hover { background: #0056b3; }
+        .btn-delete { background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; }
+        .btn-delete:hover { background: #e60000; }
+        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f6f8; display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .login-box { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 350px; text-align: center; }
+        .login-box h2 { color: #e31e24; margin-bottom: 20px; }
+        .login-box .btn-submit { width: 100%; float: none; margin-top: 10px; }
+        .error-msg { color: red; font-size: 12px; margin-top: 10px; display: none; }
+    </style>
+</head>
+<body>
+    <div id="loginOverlay">
+        <form id="adminLoginForm" class="login-box">
+            <h2>Issha Admin</h2>
+            <div class="form-group"><input type="email" id="adminEmail" class="form-control" placeholder="Admin Email" required></div>
+            <div class="form-group"><input type="password" id="adminPassword" class="form-control" placeholder="Password" required></div>
+            <button type="submit" id="loginBtn" class="btn-submit">Login</button>
+            <p id="loginError" class="error-msg">Invalid credentials.</p>
+        </form>
+    </div>
+
+    <div class="sidebar">
+        <div class="logo">issha.com <span>Admin</span></div>
+        <div class="menu-item active">Manage Products</div>
+        <div class="menu-item" id="logoutBtn">Logout</div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Product Management</h1>
+            <a href="index.html" class="btn-live" target="_blank">View Live Site</a>
+        </div>
+
+        <div class="card">
+            <div class="card-title" id="formTitle">Add New Product</div>
+            <form id="addProductForm" class="clearfix">
+                <div class="form-group">
+                    <label>Product Name *</label>
+                    <input type="text" id="productName" class="form-control" placeholder="Enter product name" required>
+                </div>
+                <div class="form-group">
+                    <label>Product Description</label>
+                    <textarea id="productDesc" class="form-control" placeholder="Enter product details..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Category *</label>
+                        <select id="productCategory" class="form-control" required>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Men's Fashion">Men's Fashion</option>
+                            <option value="Women's Fashion">Women's Fashion</option>
+                            <option value="Home & Kitchen">Home & Kitchen</option>
+                            <option value="Groceries">Groceries</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="imageInputContainer">
+                        <label>Image URLs * (Prothom chobiti main image hobe)</label>
+                        <input type="url" class="form-control productImageInput" placeholder="Image URL 1" required>
+                        <button type="button" id="addImgBtn" class="btn-add-img">+ Add More Images</button>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Regular Price (৳) *</label>
+                        <input type="number" id="productPrice" class="form-control" placeholder="e.g. 1500" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Discount (%)</label>
+                        <input type="number" id="productDiscount" class="form-control" placeholder="e.g. 10" value="0">
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit" id="saveBtn">Save Product</button>
+                <button type="button" class="btn-cancel" id="cancelBtn" onclick="resetFormState()">Cancel</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <div

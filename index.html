@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Issha.com - Online Shopping</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f6f8; }
+        .header { background: #fff; padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e31e24; }
+        .logo { font-size: 32px; font-weight: 900; color: #e31e24; text-decoration: none; }
+        .search-bar { flex: 0.6; display: flex; border: 2px solid #e31e24; border-radius: 4px; overflow: hidden; }
+        .search-bar input { flex: 1; padding: 10px; border: none; outline: none; }
+        .search-bar button { background: #e31e24; color: white; border: none; padding: 0 20px; font-weight: bold; cursor: pointer; }
+        .navbar { background: #fff; padding: 10px 50px; border-bottom: 1px solid #ddd; display: flex; gap: 20px; font-size: 14px; font-weight: 500; }
+        .navbar a { text-decoration: none; color: #333; }
+        .navbar a:hover { color: #e31e24; }
+        .main-container { padding: 40px 50px; }
+        .section-title { font-size: 20px; color: #333; margin-bottom: 20px; border-bottom: 2px solid #e31e24; display: inline-block; padding-bottom: 5px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .product-link { text-decoration: none; color: inherit; display: block; }
+        .product-card { background: #fff; border-radius: 6px; padding: 15px; text-align: center; border: 1px solid #eee; transition: 0.3s; height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-card:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-color: #e31e24; transform: translateY(-3px); }
+        .product-card img { max-width: 100%; height: 150px; object-fit: contain; margin-bottom: 15px; }
+        .product-name { font-size: 14px; color: #333; margin-bottom: 10px; height: 40px; overflow: hidden; }
+        .product-price { font-size: 18px; color: #e31e24; font-weight: bold; margin-bottom: 15px; }
+        .btn-add { background: #fff; color: #e31e24; border: 1px solid #e31e24; padding: 8px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
+        .product-card:hover .btn-add { background: #e31e24; color: #fff; }
+        .loading { text-align: center; padding: 50px; font-size: 18px; color: #666; grid-column: 1 / -1; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="index.html" class="logo">issha.com</a>
+        <div class="search-bar"><input type="text" placeholder="Search..."><button>Search</button></div>
+        <div><a href="admin.html" style="text-decoration:none; color:#333; font-weight:bold;">Admin Login</a></div>
+    </div>
+    <div class="navbar"><a href="#">Electronics</a><a href="#">Men's Fashion</a><a href="#">Groceries</a></div>
+
+    <div class="main-container">
+        <div class="section-title">Just For You</div>
+        <div class="product-grid" id="storefrontProducts">
+            <div class="loading">Loading latest products...</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD7C3P4V9CIy2U65GjUz16fBe7zv4SsMh0",
+            databaseURL: "https://issha-com-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "issha-com"
+        };
+        const db = getDatabase(initializeApp(firebaseConfig));
+
+        onValue(ref(db, 'products'), (snapshot) => {
+            const grid = document.getElementById('storefrontProducts');
+            grid.innerHTML = '';
+            if (snapshot.exists()) {
+                snapshot.forEach((childSnapshot) => {
+                    const id = childSnapshot.key;
+                    const p = childSnapshot.val();
+                    // Prothom chobi ber kora
+                    const mainImage = (p.images && p.images.length > 0) ? p.images[0] : p.image;
+                    
+                    grid.innerHTML += `
+                        <a href="product.html?id=${id}" class="product-link">
+                            <div class="product-card">
+                                <div>
+                                    <img src="${mainImage}" alt="${p.name}">
+                                    <div class="product-name">${p.name}</div>
+                                    <div class="product-price">৳${p.price}</div>
+                                </div>
+                                <button class="btn-add">View Details</button>
+                            </div>
+                        </a>
+                    `;
+                });
+            } else { grid.innerHTML = '<div class="loading">No products available.</div>'; }
+        });
+    </script>
+</body>
+</html>

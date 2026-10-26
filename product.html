@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - Issha.com</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #f4f6f8; }
+        .header { background: #fff; padding: 15px 50px; border-bottom: 2px solid #e31e24; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .header h1 { color: #e31e24; font-size: 28px; cursor: pointer; }
+        .header a { text-decoration: none; color: #333; font-weight: bold; }
+        .container { max-width: 1000px; margin: 40px auto; background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; gap: 40px; }
+        .product-img { flex: 1; text-align: center; border-right: 1px solid #eee; padding-right: 20px; }
+        .product-img img#detailImg { max-width: 100%; max-height: 400px; object-fit: contain; }
+        .thumbnail-gallery { display: flex; gap: 10px; margin-top: 20px; justify-content: center; flex-wrap: wrap; }
+        .thumbnail-gallery img { width: 60px; height: 60px; object-fit: contain; border: 1px solid #ddd; cursor: pointer; border-radius: 4px; transition: 0.2s; }
+        .thumbnail-gallery img:hover { border-color: #e31e24; }
+        .product-info { flex: 1.2; padding-left: 10px; }
+        .p-title { font-size: 26px; color: #333; margin-bottom: 10px; }
+        .p-category { color: #888; font-size: 14px; margin-bottom: 20px; display: inline-block; background: #f4f6f8; padding: 5px 10px; border-radius: 4px; }
+        .p-price { font-size: 32px; color: #e31e24; font-weight: bold; margin-bottom: 25px; }
+        .p-desc-title { font-size: 16px; font-weight: bold; color: #333; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .p-desc { color: #555; line-height: 1.6; font-size: 15px; margin-bottom: 30px; white-space: pre-wrap; }
+        .btn-cart { background: #e31e24; color: white; border: none; padding: 15px 30px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; width: 100%; transition: 0.3s; }
+        .btn-cart:hover { background: #c81a20; }
+        #loading { text-align: center; padding: 50px; font-size: 18px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="header"><h1 onclick="window.location.href='index.html'">issha.com</h1><a href="index.html">← Back to Home</a></div>
+    <div id="loading">Loading product details...</div>
+    
+    <div class="container" id="productContainer" style="display:none;">
+        <div class="product-img">
+            <img id="detailImg" src="" alt="Main Product Image">
+            <div class="thumbnail-gallery" id="thumbGallery"></div>
+        </div>
+        <div class="product-info">
+            <h1 id="detailName" class="p-title"></h1>
+            <div id="detailCategory" class="p-category"></div>
+            <div id="detailPrice" class="p-price"></div>
+            <div class="p-desc-title">Product Description</div>
+            <div id="detailDesc" class="p-desc"></div>
+            <button class="btn-cart" onclick="alert('Added to cart successfully!')">Add to Cart</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+        const db = getDatabase(initializeApp({
+            apiKey: "AIzaSyD7C3P4V9CIy2U65GjUz16fBe7zv4SsMh0",
+            databaseURL: "https://issha-com-default-rtdb.asia-southeast1.firebasedatabase.app"
+        }));
+
+        const productId = new URLSearchParams(window.location.search).get('id');
+        if (productId) {
+            get(ref(db, 'products/' + productId)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const p = snapshot.val();
+                    
+                    // Main chobi ebong gallery set kora
+                    const images = (p.images && p.images.length > 0) ? p.images : [p.image];
+                    document.getElementById('detailImg').src = images[0];
+                    
+                    const gallery = document.getElementById('thumbGallery');
+                    images.forEach(imgUrl => {
+                        const imgEl = document.createElement('img');
+                        imgEl.src = imgUrl;
+                        imgEl.onclick = () => { document.getElementById('detailImg').src = imgUrl; };
+                        gallery.appendChild(imgEl);
+                    });
+
+                    document.getElementById('detailName').innerText = p.name;
+                    document.getElementById('detailCategory').innerText = p.category;
+                    document.getElementById('detailPrice').innerText = '৳ ' + p.price;
+                    document.getElementById('detailDesc').innerText = p.description || "";
+                    
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('productContainer').style.display = 'flex';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
